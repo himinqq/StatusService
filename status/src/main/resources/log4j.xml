@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--https://logging.apache.org/log4j/2.12.x/manual/layouts.html#PatternLayout-->
+<Configuration status="WARN">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout>
+        <pattern>
+          %d{DEFAULT} %highlight{%5p} %style{%pid}{magenta} - [%style{%-10t}{red}] %style{%-50c}{cyan}: %m%n
+        </pattern>
+      </PatternLayout>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <asyncRoot level="info">
+      <AppenderRef ref="Console"/>
+    </asyncRoot>
+  </Loggers>
+</Configuration>

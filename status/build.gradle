@@ -10,6 +10,11 @@ group = 'com.neves'
 version = '0.0.1-SNAPSHOT'
 description = 'StatusService'
 
+ext {
+	disruptorVersion = '3.4.4'
+}
+
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
@@ -20,6 +25,9 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+    configureEach {
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+	}
 }
 
 repositories {
@@ -27,13 +35,18 @@ repositories {
 }
 
 dependencies {
+	implementation ('org.springframework.boot:spring-boot-starter')
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation "com.lmax:disruptor:${disruptorVersion}"
+	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	runtimeOnly 'com.h2database:h2' // 일단 mysql 연결하기 전까지 사용
 	testRuntimeOnly 'com.h2database:h2'
 }
 

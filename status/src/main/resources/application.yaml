@@ -1,3 +1,5 @@
 spring:
   application:
     name: status
+logging:
+  config: classpath:log4j.xml
