@@ -1,0 +1,39 @@
+# .github/workflows/jira-issue-sync.yml
+
+name: Create Jira Issue on GitHub Issue
+
+# 언제 이 워크플로우를 실행할지 정의합니다.
+# issues 이벤트 중 'opened'(생성) 타입일 때 실행됩니다.
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create_jira_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Jira Issue
+        # Atlassian에서 제공하는 공식 Jira 생성 액션을 사용합니다.
+        uses: atlassian/gajira-create@v3
+        with:
+          # Jira 프로젝트 키를 입력합니다. (예: 'PROJ')
+          project: 'NVS'
+
+          # 생성될 Jira 이슈의 타입을 지정합니다. (Task, Story, Bug 등)
+          issuetype: 'Task'
+
+          # GitHub 이슈의 제목을 Jira 이슈의 요약(제목)으로 사용합니다.
+          summary: '[GitHub Issue] ${{ github.event.issue.title }}'
+
+          # GitHub 이슈의 본문을 Jira 이슈의 설명으로 사용합니다.
+          # 추가로 GitHub 이슈로 바로 갈 수 있는 링크를 포함합니다.
+          description: |
+            ${{ github.event.issue.body }}
+
+            ---
+            *Created from GitHub Issue:* ${{ github.event.issue.html_url }}
+
+          # GitHub Secrets에 저장된 Jira 접속 정보를 사용합니다.
+          jira-base-url: ${{ secrets.JIRA_BASE_URL }}
+          jira-user-email: ${{ secrets.JIRA_USER_EMAIL }}
+          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
