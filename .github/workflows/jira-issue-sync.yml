@@ -54,7 +54,8 @@ jobs:
           TICKET_NUMBER=${{ steps.jira.outputs.issue }}
           LABEL=${{ (github.event.issue.labels[0] && github.event.issue.labels[0].name) || 'chore'}}
           TITLE=${{ github.event.issue.title }}
+          FIT_TITLE=$(echo ${TITLE} | tr ' ' '-' | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-')
           ISSUE_NUMBER=${{ github.event.issue.number }}
-          BRANCH_NAME=${LABEL}/${TICKET_NUMBER}-$(echo "${TITLE}" | tr ' ' '-' | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-')#${ISSUE_NUMBER}
+          BRANCH_NAME="${LABEL}/${TICKET_NUMBER}-${FIT_TITLE}#${ISSUE_NUMBER}"
           git checkout -b "${BRANCH_NAME}"
           git push origin "${BRANCH_NAME}"
