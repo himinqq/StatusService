@@ -1,0 +1,37 @@
+name: PR Updater
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  update-pr-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract issue number from branch name
+        id: extract_issue
+        if: contains(github.head_ref, '#')
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          ISSUE_NUMBER="${BRANCH_NAME##*#}"
+          echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Update PR title with issue number
+        if: steps.extract_issue.outputs.issue_number
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          ISSUE_NUMBER: ${{ steps.extract_issue.outputs.issue_number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+
+        run: |
+          gh pr edit $PR_NUMBER \
+          --title "[#$ISSUE_NUMBER] $PR_TITLE" \
+          --body "Closes #${ISSUE_NUMBER}"$'\n\n'"${PR_BODY}"

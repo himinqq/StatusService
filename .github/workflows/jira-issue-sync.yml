@@ -1,25 +1,25 @@
 # .github/workflows/jira-issue-sync.yml
 
 name: Create Jira Issue on GitHub Issue
-
+permissions:
+  contents: write
+  issues: write
 on:
   issues:
     types: [opened]
 
 jobs:
-
   create_jira_issue:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Parse a issue
         uses: stefanbuck/github-issue-praser@v3
-        id: issue-parser
+        id: issue
         with:
-          template-path: .github/ISSUE_TEMPLATE/issue-form.yml
-
-      - name: print the pared issue
-        run: |
-          echo '${{ steps.issue-parser.outputs }}'
+          template-path: .github/ISSUE_TEMPLATE/default.yml
 
       - name: Login to Jira
         uses: atlassian/gajira-login@v3
@@ -29,11 +29,32 @@ jobs:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
       - name: Create Jira Issue
+        id: jira
         uses: atlassian/gajira-create@v3
         with:
-          project: 'NVS'
-          issuetype: 'Task'
-          summary: '[${{ github.event.issue.labels[0].name }}] ${{ github.event.issue.title }}'
-          description: |
-            ${{ github.event.issue.body }}
+          project: "NVS"
+          issuetype: "Task"
+          summary: "[${{ (github.event.issue.labels[0] && github.event.issue.labels[0].name) || 'chore'}}] ${{ github.event.issue.title }}"
+          description: ${{ github.event.issue.body }}
+          fields: |
+            {
+              "parent": {
+                "key": "${{ steps.issue.outputs.issueparser_parent_task}}"
+              }
+            }
+      - name: Update issue title
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: "update-issue"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "[${{ steps.jira.outputs.issue }}] ${{ github.event.issue.title }}"
 
+      - name: Create branch with ticket number
+        run: |
+          TICKET_NUMBER=${{ steps.jira.outputs.issue }}
+          LABEL=${{ (github.event.issue.labels[0] && github.event.issue.labels[0].name) || 'chore'}}
+          TITLE=${{ github.event.issue.title }}
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          BRANCH_NAME=${LABEL}/${TICKET_NUMBER}-$(echo $TITLE | tr ' ' '-' | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-')#${ISSUE_NUMBER}
+          git checkout -b ${BRANCH_NAME}
+          git push origin ${BRANCH_NAME}

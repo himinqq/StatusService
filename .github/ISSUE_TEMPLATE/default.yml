@@ -1,21 +1,22 @@
-name: '이슈 생성'
-description: 'Repo에 이슈를 생성하고 Jira와 자동 연결됩니다. 옆에 라벨을 하나 넣어주세요'
-labels: [ chore ]
-title: '이슈 이름을 간단하게 적어주세요'
+name: "이슈 생성"
+description: "Repo에 이슈를 생성하고 Jira와 자동 연결됩니다. 옆에 라벨을 하나 넣어주세요"
+labels: [chore]
+title: "이슈 이름을 간단하게 적어주세요"
 body:
   - type: input
     id: parent_task
     attributes:
-      label: '상위 작업 티켓'
-      description: '상위 작업의 Ticket Number를 기입해주세요'
-      placeholder: 'NVS-62'
+      label: "상위 작업 티켓"
+      description: "상위 작업의 Ticket Number를 기입해주세요"
+      placeholder: "NVS-62"
+      value: "NVS-62"
     validations:
       required: true
 
   - type: input
     id: description
     attributes:
-      label: '이슈 설명'
-      description: '생성할 이슈에 대해 설명을 넣어주세요'
+      label: "이슈 설명"
+      description: "생성할 이슈에 대해 설명을 넣어주세요"
     validations:
       required: true
