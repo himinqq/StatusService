@@ -12,6 +12,7 @@ description = 'StatusService'
 
 ext {
 	disruptorVersion = '3.4.4'
+	swaggerVersion = '2.8.13'
 	set('springCloudVersion', "2025.0.0")
 }
 
@@ -43,13 +44,18 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
-	compileOnly 'org.projectlombok:lombok'
+	// docs
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${swaggerVersion}"
+
+	// DB
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'com.h2database:h2' // 일단 mysql 연결하기 전까지 사용
+	testRuntimeOnly 'com.h2database:h2'
+
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	runtimeOnly 'com.h2database:h2' // 일단 mysql 연결하기 전까지 사용
-	testRuntimeOnly 'com.h2database:h2'
 }
 
 dependencyManagement {
