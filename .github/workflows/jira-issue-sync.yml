@@ -56,5 +56,5 @@ jobs:
           TITLE=${{ github.event.issue.title }}
           ISSUE_NUMBER=${{ github.event.issue.number }}
           BRANCH_NAME=${LABEL}/${TICKET_NUMBER}-$(echo $TITLE | tr ' ' '-' | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-')#${ISSUE_NUMBER}
-          git checkout -b ${BRANCH_NAME}
-          git push origin ${BRANCH_NAME}
+          git checkout -b "${BRANCH_NAME}"
+          git push origin "${BRANCH_NAME}"
