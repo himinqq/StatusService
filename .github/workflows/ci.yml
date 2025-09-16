@@ -49,7 +49,7 @@ jobs:
 
       - name: Build and Push Docker image to ECR
         env:
-          ECR_REGISTRY: public.ecr.aws/k8s0f8l3/neves/status-service
+          ECR_REGISTRY: public.ecr.aws/k8s0f8l3
           ECR_REPOSITORY: neves/status-service
           IMAGE_TAG: ${{ github.sha }}
         run: |
