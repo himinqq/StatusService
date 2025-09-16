@@ -7,19 +7,20 @@ on:
     types: [opened]
 
 jobs:
-  - name: Parse a issue
-    uses: stefanbuck/github-issue-praser@v3
-    id: issue-parser
-    with:
-       template-path: .github/ISSUE_TEMPLATE/issue-form.yml
-
-  - name: print the pared issue
-    run: |
-      echo '${{ steps.issue-parser.outputs }}'
 
   create_jira_issue:
     runs-on: ubuntu-latest
     steps:
+      - name: Parse a issue
+        uses: stefanbuck/github-issue-praser@v3
+        id: issue-parser
+        with:
+          template-path: .github/ISSUE_TEMPLATE/issue-form.yml
+
+      - name: print the pared issue
+        run: |
+          echo '${{ steps.issue-parser.outputs }}'
+
       - name: Login to Jira
         uses: atlassian/gajira-login@v3
         env:
