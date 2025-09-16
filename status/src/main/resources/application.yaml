@@ -3,3 +3,7 @@ spring:
     name: status
 logging:
   config: classpath:log4j.xml
+
+springdoc:
+  swagger-ui:
+    path: '/docs'
