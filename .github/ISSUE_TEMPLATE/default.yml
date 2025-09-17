@@ -24,7 +24,7 @@ body:
         - Medium
         - Low
         - Lowest
-      value: Medium
+      default: 2
     validations:
       required: true
 
@@ -37,6 +37,7 @@ body:
         - Story
         - Task
         - Sub-task
+      default: 2
     validations:
       required: true
 
