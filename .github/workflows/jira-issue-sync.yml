@@ -83,3 +83,9 @@ jobs:
 
           # 3. 이슈 본문 업데이트
           gh issue edit $ISSUE_NUMBER --body "$BODY$NEW_CONTENT"
+
+      - name: Change status to "In Progress"
+        uses: atlassian/gajira-transition@v3
+        with:
+          issue: ${{ steps.jira.outputs.issue }}
+          transition: "진행 중"
