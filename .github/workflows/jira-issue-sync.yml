@@ -21,6 +21,9 @@ jobs:
         with:
           template-path: .github/ISSUE_TEMPLATE/default.yml
 
+      - name: Print parsed values
+        run: echo "${{ toJson(steps.issue.outputs) }}"
+
       - name: Login to Jira
         uses: atlassian/gajira-login@v3
         env:
@@ -33,13 +36,14 @@ jobs:
         uses: atlassian/gajira-create@v3
         with:
           project: "NVS"
-          issuetype: "Task"
-          summary: "[${{ (github.event.issue.labels[0] && github.event.issue.labels[0].name) || 'chore'}}] ${{ github.event.issue.title }}"
-          description: ${{ github.event.issue.body }}
+          issuetype: ${{ steps.issue.outputs.issueparser_jira_issuetype }}
+          summary: "[${{ (github.event.issue.labels[0] && github.event.issue.labels[0].name) || 'chore' }}] ${{ github.event.issue.title }}"
+          description: |
+            ${{ steps.issue.outputs.issueparser_description }}
           fields: |
             {
               "parent": {
-                "key": "${{ steps.issue.outputs.issueparser_parent_task}}"
+                "key": "${{ steps.issue.outputs.issueparser_parent_task }}"
               }
             }
       - name: Update issue title
@@ -50,6 +54,7 @@ jobs:
           title: "[${{ steps.jira.outputs.issue }}] ${{ github.event.issue.title }}"
 
       - name: Create branch with ticket number
+        id: branch
         run: |
           TICKET_NUMBER=${{ steps.jira.outputs.issue }}
           LABEL=${{ (github.event.issue.labels[0] && github.event.issue.labels[0].name) || 'chore'}}
@@ -59,3 +64,22 @@ jobs:
           BRANCH_NAME="${LABEL}/${TICKET_NUMBER}-${FIT_TITLE}#${ISSUE_NUMBER}"
           git checkout -b "${BRANCH_NAME}"
           git push origin "${BRANCH_NAME}"
+
+          echo "branch_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Update Issue with Branch Name
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="${{ steps.branch.outputs.branch_name }}"
+          BODY="${{ github.event.issue.body }}"
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+
+          # 2. 이슈 본문에 추가할 내용 구성
+          NEW_CONTENT=$'\n\n'
+          NEW_CONTENT+="---"$'\n'
+          NEW_CONTENT+="### 작업 브랜치"$'\n'
+          NEW_CONTENT+="${BRANCH_NAME}"
+
+          # 3. 이슈 본문 업데이트
+          gh issue edit $ISSUE_NUMBER --body "$BODY$NEW_CONTENT"
