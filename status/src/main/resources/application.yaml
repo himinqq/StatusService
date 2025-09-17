@@ -1,6 +1,17 @@
 spring:
   application:
     name: status
+  datasource:
+    url: ${RDB_URL:jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
+    username: ${RDB_USER:sa}
+    password: ${RDB_PASSWORD:}
+    driver-class-name: ${RDB_DRIVER_CLASS:org.h2.Driver}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
 logging:
   config: classpath:log4j.xml
 
