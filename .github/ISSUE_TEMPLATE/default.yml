@@ -14,21 +14,6 @@ body:
       required: true
 
   - type: dropdown
-    id: priority
-    attributes:
-      label: "우선순위"
-      description: "이슈의 우선순위를 선택하세요"
-      options:
-        - Highest
-        - High
-        - Medium
-        - Low
-        - Lowest
-      default: 2
-    validations:
-      required: true
-
-  - type: dropdown
     id: jira_issuetype
     attributes:
       label: "이슈 유형"
@@ -36,8 +21,8 @@ body:
       options:
         - Story
         - Task
-        - Sub-task
-      default: 2
+        - Subtask
+      default: 1
     validations:
       required: true
 
